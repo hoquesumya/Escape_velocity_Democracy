@@ -5,6 +5,7 @@ also handles the peer notification of joining and leavingthe network
 from socket import *
 import argparse
 import threading
+import json
 
 class Tracker:
     def __init__(self):
@@ -27,7 +28,10 @@ class Tracker:
                         print("data is done")
                         break
                     data = data.decode()
-                    print(data)
+                    data = json.loads(data)
+                    if ((data["ip"], data["port"])) not in self.active_peers:
+                        self.active_peers.add((data["ip"], data["port"]))
+                    
                     self.update_peers(clientsoc)
     
         finally:
@@ -37,8 +41,12 @@ class Tracker:
 
     def update_peers(self,clientsoc):
        
-       clientsoc.sendall(b"hello from tracker")
+       for i in self.active_peers:
+            sending_data = json.dumps({"ip":i[0], "port":i[1]})
+            sending_data+='\n'
+            clientsoc.sendall(sending_data.encode())
 
+                
         
     def start_tracker(self,trackerPort):
         self.s = socket(AF_INET,SOCK_STREAM)
