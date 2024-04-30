@@ -2,6 +2,8 @@ from socket import *
 import argparse
 import json
 import threading
+import time
+import collections
 
 class Peers:
     def __init__(self,port):
@@ -13,6 +15,7 @@ class Peers:
         self.lock = threading.Lock()
         ip_address = gethostname()
         self.ip=str(gethostbyname(ip_address))
+        self.enqueue = collections.deque()
 
 
     def handleTracker(self, trackerPort, trackerIp):
@@ -70,12 +73,26 @@ class Peers:
                         print("data is done")
                         break
                 data=data.decode()
-                print(data)
-                clientsoc.sendall(b'hello')
+                print("recvd data is", data)
+                if data == "needBlockchain":
+                    clientsoc.sendall(b'sent all the blockchains')
                 break
 
        
-
+    def init_blockchain(self,i):
+            buffer = 1024
+            temp_client_sock = socket(AF_INET, SOCK_STREAM)
+            print("my peer is",i)
+            temp_client_sock.connect((i[0],i[1]))
+            self.lock.release()
+            
+            print("sending now")
+            temp_client_sock.send(b'needBlockchain')
+            print("connecting to the  peer")
+            data = temp_client_sock.recv(buffer)
+            data = data.decode()
+            print("other server data",data)
+        
     def p2pclient(self):
         #will act as a client
         #first initally send request to the other server to get the copy of the blockchain
@@ -92,19 +109,31 @@ class Peers:
         #send the all peers to get the initial block
         print("ip's are available")
         #multipl client multiple socet
+
         all_client_sock = []
+        time.sleep(5)
+        self.lock.acquire()
+        all_threads = []
         for i in self.all_peers_list:
+            '''
+            
             temp_client_sock = socket(AF_INET, SOCK_STREAM)
             all_client_sock.append(temp_client_sock)
             print("my peer is",i)
             temp_client_sock.connect((i[0],i[1]))
-        
-        for i in all_client_sock:
-            
-            data = i.recv(buffer)
+            self.lock.release()
+            print("sending now")
+            temp_client_sock.send(b'needBlockchain')
+            print("connecting to the  peer")
+            data = temp_client_sock.recv(buffer)
             data = data.decode()
-            print(data)
+            print("other server data",data)
+            self.lock.acquire()
+            '''
             
+            t = threading.Thread(target=self.init_blockchain, args=(i,))
+            t.start()
+            self.lock.acquire()
 
 
 if __name__=='__main__':
@@ -129,9 +158,12 @@ if __name__=='__main__':
     t1 = threading.Thread(target=peer.p2pclient, args=())
     t1.start()
     all_threads.append(t1)
+    
     t2 = threading.Thread(target=peer.p2p_server, args=())
     t2.start()
     all_threads.append(t2)
+
+ 
 
 
     #peer.handleTracker(trackerPort,trackerIp)

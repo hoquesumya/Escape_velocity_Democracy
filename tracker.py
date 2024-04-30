@@ -15,6 +15,7 @@ class Tracker:
         self.active_peers=set()
         self.t=None
         self.s=None
+        self.stop_event = threading.Event()
 
     def handlePeersConnections(self,clientsoc,addr):
         """
@@ -22,10 +23,11 @@ class Tracker:
         """
         buffer_size =1024
         try:
-            while True:
+            while not self.stop_event.is_set():
                     data = clientsoc.recv(buffer_size)
                     if not data:
-                        print("data is done")
+                        print("daa is done")
+                        
                         break
                     data = data.decode()
                     data = json.loads(data)
@@ -63,13 +65,11 @@ class Tracker:
                 threads.append(self.t)
         except KeyboardInterrupt:
             print("keyboard interrupted")
+            self.stop_event.set()
             for t in threads:
-                try:
-                 print(t.is_alive())
-                 t.join()
-                except Exception:
-                    print("hellobye")
-        self.s.close()
+                t.join()
+            self.s.close()
+    
 
 
 if __name__=='__main__':
