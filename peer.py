@@ -12,7 +12,11 @@ class Peers:
         self.peerSockserver =  socket(AF_INET,SOCK_STREAM)
         self.all_peers_list=set()
         self.port = port
+        '''this is the list of locking to handle multiple scenrios'''
         self.lock = threading.Lock()
+        self.lock_blockchain = threading.Lock() 
+        self.temp_block=threading.Lock()
+        self.temp = []
         ip_address = gethostname()
         self.ip=str(gethostbyname(ip_address))
         self.enqueue = collections.deque()
@@ -76,6 +80,24 @@ class Peers:
                 print("recvd data is", data)
                 if data == "needBlockchain":
                     clientsoc.sendall(b'sent all the blockchains')
+               
+
+                elif data == "incoming_block":
+                    """
+                     this  part will handle validating the block
+                     if the block is valid will be added to the chain and will perform mining
+                     then send the success status
+                    """
+                    pass
+                else:
+                    """
+                    client request
+                    create the block
+                    append to the enquue
+                    self.lock_blockhain.acquire()
+                    self.enqueue.append(block)
+                    """
+                
                 break
 
        
@@ -84,7 +106,7 @@ class Peers:
             temp_client_sock = socket(AF_INET, SOCK_STREAM)
             print("my peer is",i)
             temp_client_sock.connect((i[0],i[1]))
-            self.lock.release()
+            #self.lock.release()
             
             print("sending now")
             temp_client_sock.send(b'needBlockchain')
@@ -92,6 +114,11 @@ class Peers:
             data = temp_client_sock.recv(buffer)
             data = data.decode()
             print("other server data",data)
+
+            '''got the blockchain update in the temp blockain'''
+            self.temp_block.acquire()
+            self.temp.append(data)
+            self.temp_block.release()
         
     def p2pclient(self):
         #will act as a client
@@ -104,36 +131,35 @@ class Peers:
         case 3: I have a new transaction broadcast to the other peers
         """
         buffer = 1024
-        while (not self.all_peers_list):
+        i =0
+        while (not self.all_peers_list and i<3):
             print("waitng for peers to e available")
+            i+=1
+            time.sleep(1)
         #send the all peers to get the initial block
         print("ip's are available")
         #multipl client multiple socet
 
-        all_client_sock = []
-        time.sleep(5)
+       
+       
         self.lock.acquire()
         all_threads = []
+        """
+        this loop is for getting intial blockchain receive
+        """
         for i in self.all_peers_list:
-            '''
-            
-            temp_client_sock = socket(AF_INET, SOCK_STREAM)
-            all_client_sock.append(temp_client_sock)
-            print("my peer is",i)
-            temp_client_sock.connect((i[0],i[1]))
-            self.lock.release()
-            print("sending now")
-            temp_client_sock.send(b'needBlockchain')
-            print("connecting to the  peer")
-            data = temp_client_sock.recv(buffer)
-            data = data.decode()
-            print("other server data",data)
-            self.lock.acquire()
-            '''
             
             t = threading.Thread(target=self.init_blockchain, args=(i,))
             t.start()
-            self.lock.acquire()
+            all_threads.append(t)
+           # self.lock.acquire()
+        self.lock.release()
+        #comoare temp which block has the highest id accept that block
+
+        """
+        after comparing the blockchain start reviewing the client transaction
+        """
+
 
 
 if __name__=='__main__':
