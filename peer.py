@@ -2,7 +2,6 @@ from socket import *
 import argparse
 import json
 import threading
-
 class Peers:
     def __init__(self,port):
         self.myPeers=set()
@@ -13,7 +12,6 @@ class Peers:
         self.lock = threading.Lock()
         ip_address = gethostname()
         self.ip=str(gethostbyname(ip_address))
-
 
     def handleTracker(self, trackerPort, trackerIp):
         """
@@ -56,6 +54,9 @@ class Peers:
                 continue
 
     def p2p_server(self):
+        """
+        will act as a server and listen for the incoming connection from the other peers
+        """
 
         self.peerSockserver.bind(('',self.port))
         self.peerSockserver.listen(1)
@@ -74,8 +75,6 @@ class Peers:
                 clientsoc.sendall(b'hello')
                 break
 
-       
-
     def p2pclient(self):
         #will act as a client
         #first initally send request to the other server to get the copy of the blockchain
@@ -87,8 +86,8 @@ class Peers:
         case 3: I have a new transaction broadcast to the other peers
         """
         buffer = 1024
-        while (not self.all_peers_list):
-            print("waitng for peers to e available")
+        while (not self.all_peers_list): # modify this
+            print("waitng for peers to be available")
         #send the all peers to get the initial block
         print("ip's are available")
         #multipl client multiple socet
@@ -105,8 +104,6 @@ class Peers:
             data = data.decode()
             print(data)
             
-
-
 if __name__=='__main__':
     parser = argparse.ArgumentParser(
                     prog='tracker.py',
@@ -132,7 +129,6 @@ if __name__=='__main__':
     t2 = threading.Thread(target=peer.p2p_server, args=())
     t2.start()
     all_threads.append(t2)
-
 
     #peer.handleTracker(trackerPort,trackerIp)
 
