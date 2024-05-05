@@ -1,6 +1,4 @@
 import hashlib
-
-
 class Block:
     def __init__(self,block_id,data,timeS):
         self.nonce = 0
