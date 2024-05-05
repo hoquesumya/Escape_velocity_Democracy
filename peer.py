@@ -4,9 +4,10 @@ import json
 import threading
 import time
 import collections
+from blockchain import Block, BlockChain
 
 class Peers:
-    def __init__(self,port):
+    def __init__(self,port, ip_address='localhost'):
         self.myPeers=set()
         self.peerSock=socket(AF_INET, SOCK_STREAM)
         self.peerSockserver =  socket(AF_INET,SOCK_STREAM)
@@ -102,28 +103,29 @@ class Peers:
                     self.enqueue.append(block)
                     self.lock_blockchain.release()
                     """
-                
+                    
                 break
 
-       
-    def init_blockchain(self,i):
-            buffer = 1024
-            temp_client_sock = socket(AF_INET, SOCK_STREAM)
-            print("my peer is",i)
-            temp_client_sock.connect((i[0],i[1]))
-            #self.lock.release()
-            
-            print("sending now")
-            temp_client_sock.send(b'needBlockchain')
-            print("connecting to the  peer")
-            data = temp_client_sock.recv(buffer)
-            data = data.decode()
-            print("other server data",data)
-
-            '''got the blockchain update in the temp blockain'''
-            self.temp_block.acquire()
-            self.temp.append(data)
-            self.temp_block.release()
+    def copy_blockchain(self,i):
+        """
+        this function will be called by the p2pclient when first connecting. It copys the blockchain from the other servers
+        """
+        buffer = 1024
+        temp_client_sock = socket(AF_INET, SOCK_STREAM)
+        print("my peer is",i)
+        temp_client_sock.connect((i[0],i[1]))
+        #self.lock.release()
+        
+        print("sending now")
+        temp_client_sock.send(b'needBlockchain')
+        print("connecting to the  peer")
+        data = temp_client_sock.recv(buffer)
+        data = data.decode()
+        print("other server data",data)
+        '''got the blockchain update in the temp blockain'''
+        self.temp_block.acquire()
+        self.temp.append(data)
+        self.temp_block.release()
         
     def p2pclient(self):
         #will act as a client
@@ -135,30 +137,29 @@ class Peers:
         PEERS are here; but i don't have any block request for block
         case 3: I have a new transaction broadcast to the other peers
         """
+        buffer = 1024
         all_threads = []
-        i =0
+        i = 0
         while (not self.all_peers_list and i<3):
-            print("waitng for peers to e available")
+            print("waiting for peers to be available")
             i+=1
-            time.sleep(1)
+            time.sleep(10)
         #send the all peers to get the initial block
         print("ip's are available")
-        #multipl client multiple socet
+        # multiple clients multiple sockets
 
-       
-       
         self.lock.acquire()
         """
         this loop is for getting intial blockchain from the peers
         Note: at first there could be no other peers than the all_peers_list
         will be empty; and this loop won't be executed
         """
-        for i in self.all_peers_list:
-            
-            t = threading.Thread(target=self.init_blockchain, args=(i,))
+        for i in self.all_peers_list:  
+            t = threading.Thread(target=self.copy_blockchain, args=(i,))
             t.start()
             all_threads.append(t)
-           # self.lock.acquire()
+            # self.lock.acquire()
+
         self.lock.release()
 
         #comoare temp which block has the highest id accept that block
@@ -166,8 +167,6 @@ class Peers:
         """
         after comparing the blockchain start reviewing the client transaction from the enqueue
         """
-
-
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(
@@ -195,9 +194,6 @@ if __name__=='__main__':
     t2 = threading.Thread(target=peer.p2p_server, args=())
     t2.start()
     all_threads.append(t2)
-
- 
-
 
     #peer.handleTracker(trackerPort,trackerIp)
 

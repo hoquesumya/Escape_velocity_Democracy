@@ -1,6 +1,4 @@
 import hashlib
-
-
 class Block:
     def __init__(self,block_id,data,timeS):
         self.nonce = 0
@@ -13,7 +11,6 @@ class Block:
         this won't be added in the headers
         '''
         self.my_hash = self.create_hash_block()
-    
 
     def create_hash_data(self):
         data = str(self.transaction)
@@ -33,13 +30,9 @@ class Block:
         return self.my_hash
 
 
-
-
-
 """"
 this is the blockchain class
 """
-
 class BlockChain:
     def __init__(self):
         self.chain = []
@@ -52,9 +45,11 @@ class BlockChain:
     
     def is_valid_block(self,new_block):
         """
-        check the nonce and the transaction types
+        check the nonce and the transaction types. We may want to add more checks to ensure uniqueness of the votes
         """
-        pass
+        if new_block.my_hash[:2] == "00":
+            return True
+        return False
 
 
 
