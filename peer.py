@@ -22,7 +22,6 @@ class Peers:
         self.ip=str(gethostbyname(ip_address))
         self.enqueue = collections.deque()
 
-
     def handleTracker(self, trackerPort, trackerIp):
         """
         will recv and send from /to the tracker
@@ -64,6 +63,9 @@ class Peers:
                 continue
 
     def p2p_server(self):
+        """
+        will act as a server and listen for the incoming connection from the other peers
+        """
 
         self.peerSockserver.bind(('',self.port))
         self.peerSockserver.listen(1)
