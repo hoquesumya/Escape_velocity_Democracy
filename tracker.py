@@ -48,7 +48,7 @@ class Tracker:
             sending_data+='\n'
             clientsoc.sendall(sending_data.encode())
 
-                
+  
         
     def start_tracker(self,trackerPort):
         self.s = socket(AF_INET,SOCK_STREAM)

@@ -32,13 +32,9 @@ class Block:
         return self.my_hash
 
 
-
-
-
 """"
 this is the blockchain class
 """
-
 class BlockChain:
     def __init__(self):
         self.chain = []
@@ -51,9 +47,11 @@ class BlockChain:
     
     def is_valid_block(self,new_block):
         """
-        check the nonce and the transaction types
+        check the nonce and the transaction types. We may want to add more checks to ensure uniqueness of the votes
         """
-        pass
+        if new_block.my_hash[:2] == "00":
+            return True
+        return False
 
 
 
