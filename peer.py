@@ -131,16 +131,15 @@ class Peers:
         case 3: I have a new transaction broadcast to the other peers
         """
         buffer = 1024
-        i =0
+        i = 0
         while (not self.all_peers_list and i<3):
-            print("waitng for peers to e available")
+            print("waitng for peers to be available")
             i+=1
             time.sleep(1)
         #send the all peers to get the initial block
         print("ip's are available")
         #multipl client multiple socet
 
-       
        
         self.lock.acquire()
         all_threads = []

@@ -13,7 +13,6 @@ class Block:
         this won't be added in the headers
         '''
         self.my_hash = self.create_hash_block()
-    
 
     def create_hash_data(self):
         data = str(self.transaction)
