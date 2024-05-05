@@ -78,6 +78,8 @@ class Peers:
                         break
                 data=data.decode()
                 print("recvd data is", data)
+
+                '''newly connected peer wants to have the copy of the blockchain'''
                 if data == "needBlockchain":
                     clientsoc.sendall(b'sent all the blockchains')
                
@@ -96,6 +98,7 @@ class Peers:
                     append to the enquue
                     self.lock_blockhain.acquire()
                     self.enqueue.append(block)
+                    self.lock_blockchain.release()
                     """
                 
                 break
@@ -130,7 +133,7 @@ class Peers:
         PEERS are here; but i don't have any block request for block
         case 3: I have a new transaction broadcast to the other peers
         """
-        buffer = 1024
+        all_threads = []
         i =0
         while (not self.all_peers_list and i<3):
             print("waitng for peers to e available")
@@ -143,9 +146,10 @@ class Peers:
        
        
         self.lock.acquire()
-        all_threads = []
         """
-        this loop is for getting intial blockchain receive
+        this loop is for getting intial blockchain from the peers
+        Note: at first there could be no other peers than the all_peers_list
+        will be empty; and this loop won't be executed
         """
         for i in self.all_peers_list:
             
@@ -154,10 +158,11 @@ class Peers:
             all_threads.append(t)
            # self.lock.acquire()
         self.lock.release()
+
         #comoare temp which block has the highest id accept that block
 
         """
-        after comparing the blockchain start reviewing the client transaction
+        after comparing the blockchain start reviewing the client transaction from the enqueue
         """
 
 

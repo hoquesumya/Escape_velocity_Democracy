@@ -27,10 +27,11 @@ class Tracker:
                     data = clientsoc.recv(buffer_size)
                     if not data:
                         print("daa is done")
-                        
+                        """remove the ip and port from the set of the peer"""
                         break
                     data = data.decode()
                     data = json.loads(data)
+
                     if ((data["ip"], data["port"])) not in self.active_peers:
                         self.active_peers.add((data["ip"], data["port"]))
                     
