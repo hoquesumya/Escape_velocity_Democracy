@@ -22,20 +22,32 @@ class Tracker:
         based on the data typ
         """
         buffer_size =1024
+        temp_addr = {
+        }
         try:
             while not self.stop_event.is_set():
                     data = clientsoc.recv(buffer_size)
                     if not data:
-                        print("daa is done")
+                        print("data is done")
+                        self.active_peers.remove((temp_addr["ip"],temp_addr["port"]))
                         """remove the ip and port from the set of the peer"""
                         break
                     data = data.decode()
                     data = json.loads(data)
+                    if data["action"] == "unregister":
+                        self.active_peers.remove((data["ip"],data["port"]))
+                        break
+                    else:
+                        if ((data["ip"], data["port"])) not in self.active_peers:
+                            self.active_peers.add((data["ip"], data["port"]))
+                            temp_addr={
+                                "ip":data["ip"],
+                                "port":data["port"]
 
-                    if ((data["ip"], data["port"])) not in self.active_peers:
-                        self.active_peers.add((data["ip"], data["port"]))
+                            }
+                            print(temp_addr)
                     
-                    self.update_peers(clientsoc)
+                            self.update_peers(clientsoc)
     
         finally:
             clientsoc.close()

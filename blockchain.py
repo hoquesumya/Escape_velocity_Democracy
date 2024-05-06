@@ -54,6 +54,7 @@ class BlockChain:
     """a dummy block       """
     def create_genesis_block(self):
             genesis_block = Block(0,[],0,"0")
+            genesis_block.my_hash = genesis_block.create_hash()
             self.chain.append(genesis_block)
 
     
@@ -70,6 +71,9 @@ class BlockChain:
     
 
     def is_valid_proof(self,block,block_hash):
+        print("hello2")
+        print("hash", block_hash==block.create_hash())
+        print(block_hash[:2])
         return (block_hash[:2]=="0"*self.difficulty and block_hash==block.create_hash())
 
     def get_latest_block(self):
@@ -82,9 +86,22 @@ class BlockChain:
         we need to check if the chain makes sense
         
         """
+        chain_temp =[]
+        for i in chain:
+            block = Block(i["block_id"],
+                          i["transaction"],
+                          i["timeS"],
+                          i["previous_hash"],
+                          i["nonce"]
+                          )
+            block.my_hash=i["my_hash"]
+            block.hash_of_data=i["hash_of_data"]
+            chain_temp.append(block)
+
+        
         longest_chain = None
         current_len = len(self.chain)
-        if  length > current_len and self.check_chain_validity(chain):
+        if  length > current_len and self.check_chain_validity(chain_temp):
 
             current_len = length
             longest_chain=chain
@@ -97,9 +114,15 @@ class BlockChain:
     
 
     def check_chain_validity(self,chain):
+        print("hello")
         res= True
         previous_hash = "0"
         for block in chain:
+            """indicate the genesis block"""
+            if block.block_id==0:
+                previous_hash = block.my_hash
+                continue
+
             if not self.is_valid_proof(block,block.my_hash) or previous_hash!=block.previous_hash:
                 res= False
                 break
@@ -125,6 +148,9 @@ class BlockChain:
             return True
     
     def add_new_transaction(self,transaction):
+        """
+        json query
+        """
         self.unconfirmed_transaction.append(transaction)
 
     def mining(self):
@@ -134,6 +160,7 @@ class BlockChain:
         else:
             last_block = self.get_latest_block()
             prev_hash = last_block.my_hash 
+            print("previous_hash is",prev_hash)
             block = Block(last_block.block_id+1, 
                           self.unconfirmed_transaction,
                           timeS=time.time(),previous_hash=prev_hash)
