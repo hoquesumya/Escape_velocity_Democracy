@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voting System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+
+</head>
+<body>
+    <h1>Voting System</h1>
+
+    <form method="POST">
+        <label for="passphrase">Passphrase (Encrypted with your private key):</label><br>
+        <input type="password" id="passphrase" name="passphrase" required><br>
+        <label for="key">Your Public Key:</label><br>
+        <textarea type="text" id="key" name="key" required></textarea><br>
+        <label for="vote">Your Vote:</label><br>
+        <select id="vote" name="vote" required>
+            {% for candidate in candidates %}
+                <option value="{{ candidate }}">{{ candidate }}</option>
+            {% endfor %}
+        </select><br>
+        <input type="submit" value="Submit">
+    </form>
+    </form>
+
+    <h2>Results</h2>
+    <ul>
+    {% for result in results %}
+        <li>{{ result }}</li>
+    {% endfor %}
+    </ul>
+
+    <form method="POST" action="{{ url_for('reset') }}">
+        <input type="submit" value="Reset Votes">
+    </form>
+</body>
+</html>
