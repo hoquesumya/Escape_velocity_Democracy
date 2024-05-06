@@ -4,9 +4,25 @@ import json
 import threading
 import time
 import collections
+from blockchain import BlockChain
+
+
+def get_chain_and_send(clientsoc,blockChain):
+    chains=[]
+    for block in blockChain.chain:
+        chains.append(block.__dict__)
+    data = {
+        "len":len(chains),
+        "chain":chains
+    }
+    data1 = json.dumps(data)
+    
+    clientsoc.sendall(data1.encode())
+
+
 
 class Peers:
-    def __init__(self,port):
+    def __init__(self,port,blockchain):
         self.myPeers=set()
         self.peerSock=socket(AF_INET, SOCK_STREAM)
         self.peerSockserver =  socket(AF_INET,SOCK_STREAM)
@@ -20,6 +36,7 @@ class Peers:
         ip_address = gethostname()
         self.ip=str(gethostbyname(ip_address))
         self.enqueue = collections.deque()
+        self.blockChain = blockchain
 
     def handleTracker(self, trackerPort, trackerIp):
         """
@@ -83,8 +100,8 @@ class Peers:
 
                 '''newly connected peer wants to have the copy of the blockchain'''
                 if data == "needBlockchain":
-                    clientsoc.sendall(b'sent all the blockchains')
-               
+                   # clientsoc.sendall(b'sent all the blockchains')
+                    get_chain_and_send(clientsoc=clientsoc,blockChain=self.blockChain) 
 
                 elif data == "incoming_block":
                     """
@@ -181,7 +198,11 @@ if __name__=='__main__':
     peerPort = args.peerPort
     trackerIp = args.trackerAddr
     trackerPort= args.trackerPort
-    peer=Peers(peerPort)
+
+    blockChain = BlockChain()
+    blockChain.create_genesis_block()
+
+    peer=Peers(peerPort,blockChain)
     #first registerwith the tracker and get all the avaliable tracker
     all_threads = []
 
