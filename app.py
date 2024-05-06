@@ -1,32 +1,54 @@
-from flask import Flask, request, render_template, redirect, url_for, Blueprint
-from vote import Vote, VoteChain, VoteChainError
+from flask import Flask, request, render_template, redirect, url_for
+import socket
+import time
+import json
+import argparse
 import random
+import threading
+
+# get peer ip and peer port from a random line of vms.txt
+with open('static/vms.txt') as f:
+    random.seed(100) # control reproducibility in testing
+    peer_ip, peer_port = random.choice(f.readlines()).strip().split(',')
+    peer_port = int(peer_port)
+    print(f"Peer IP: {peer_ip}, Peer Port: {peer_port}")
+
+# parser = argparse.ArgumentParser(description='Flask app to send data to a specified peer.')
+# parser.add_argument('peer_ip', type=str, help='IP address of the peer')
+# parser.add_argument('peer_port', type=int, help='Port number of the peer')
+# args = parser.parse_args()
 
 app = Flask(__name__)
 
-vote_chain = VoteChain()
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
-
-    # candidates = <10 random names from candidates.txt>
     with open('static/candidates.txt') as f:
-        candidates = random.sample(f.readlines(), 10)
+        random.seed(100) # control reproducibility in testing
+        candidates = random.sample(f.readlines(), 10, )
 
     if request.method == 'POST':
-        vote = Vote(request.form['name'], request.form['vote'])
-        try:
-            vote_chain.add_vote(vote)
-        except VoteChainError as e:
-            return str(e)
-    votes = vote_chain.get_votes()
-    results = vote_chain.get_results()
-    return render_template('index.html', votes=votes, results=results, candidates=candidates)
+        # Retrieve data from the form
+        passphrase = request.form['passphrase']
+        public_key = request.form['key']
+        vote = request.form['vote']
 
-@app.route('/reset', methods=['POST'])
-def reset():
-    vote_chain.reset()
-    return redirect(url_for('index'))
+        data = f"{passphrase},{public_key},{vote}"
+
+        # Send data to the peer using the IP and port from command-line arguments
+        response = send_data_to_peer(data, peer_ip, peer_port)
+        return render_template('index.html', response=response, candidates=candidates)
+    return render_template('index.html', response=None, candidates=candidates)
+
+def send_data_to_peer(data, ip, port):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect((ip, port))
+            sock.sendall(data.encode('utf-8'))
+            # Optionally receive a response
+            response = sock.recv(1024)
+            return f"Received from server: {response.decode('utf-8')}"
+    except Exception as e:
+        return f"An error occurred: {e}"
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,5 +1,5 @@
 """
-this file will work as the server where it will send theactive peer list to the peers
+this file will work as the server where it will send the active peer list to the peers
 also handles the peer notification of joining and leavingthe network
 """
 from socket import *

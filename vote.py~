@@ -1,0 +1,19 @@
+import datetime
+from peer import Peers
+
+def cast_vote(vote_data):
+    """
+    This function is used to cast a vote
+    """
+    vote = Vote(vote_data)
+    peer = Peers()
+    peer.cast_vote(vote)
+class Vote:
+    def __init__(self, vote_id, vote_data):
+        self.vote_id = vote_id
+        self.vote_data = vote_data
+        self.timestamp = datetime.datetime.now()
+
+    def __str__(self):
+        return f'{self.vote_id}: {self.vote_data}'
+    
