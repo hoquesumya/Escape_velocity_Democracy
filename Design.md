@@ -1,6 +1,6 @@
 ## PROJECT IDEAS:
 
-- What if we lived in a world without a centralized government? All decisions were voted on by the population. The results of these votes would be extremely sensitive, so we can’t trust any individual to store it in its entirety. We propose a protocol to support Blockchain Voting Ledger for Direct Democracy
+- What if we lived in a world without a centralized government? And all decisions were voted on by the population. The results of these votes would be extremely sensitive, so we can’t trust any individual to store it in its entirety. We propose a protocol to support Blockchain Voting Ledger for Direct Democracy
 
 
 ## FEATURES:
@@ -10,9 +10,6 @@ Our project will be split up into two sections: 1. an internet protocol to handl
 2. Blockchain Layer
 ## Apportionment of Tasks:
 Since we are a small team of two people (our assigned teammate Run is AWOL), we will divide the labor according to the above-mentioned sections. Caspar will lead the development of the protocol layer, and Sumya will handle the blockchain implementation. 
-
-
-
 
 ## p2pserver():
     1. client/ peer will connect to the peer server. 
