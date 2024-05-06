@@ -7,6 +7,38 @@ import time
 import collections
 from blockchain import BlockChain
 
+def cast_vote(self, voter_id, candidate, clientsoc):
+    """
+    Casts a vote in the blockchain network by packaging it into a transaction
+    and attempting to mine it into a block.
+
+    Args:
+        voter_id (str): The identifier for the voter.
+        candidate (str): The candidate or option the vote is for.
+        clientsoc (socket): The client socket to send feedback to after mining attempt.
+
+    Returns:
+        None
+    """
+    import datetime
+    # Create a transaction dictionary representing the vote
+    transaction = {
+        "voter_id": voter_id,
+        "candidate": candidate,
+        "timestamp": datetime.datetime.now().isoformat()  # Include a timestamp for the transaction
+    }
+
+    # Assuming `add_new_transaction` adds the transaction to a pool
+    self.blockChain.add_new_transaction(transaction)
+
+    # Try to mine the transaction into a block
+    result = self.mine_unverified_transaction(clientsoc)
+
+    # Send feedback to the client based on the mining result
+    if result:
+        clientsoc.sendall(b"Vote cast and block mined successfully.")
+    else:
+        clientsoc.sendall(b"Failed to mine the block containing the vote.")
 
 def get_chain_and_send(clientsoc,blockChain):
     chains=[]
@@ -19,12 +51,6 @@ def get_chain_and_send(clientsoc,blockChain):
     data1 = json.dumps(data)
     data_temp = data1+"done"
     clientsoc.sendall(data_temp.encode())
-
-
-
-    
-
-
 
 class Peers:
     def __init__(self,port,blockchain):
@@ -43,8 +69,10 @@ class Peers:
         self.enqueue = collections.deque()
         self.blockChain = blockchain
 
-
     def mine_unverified_transaction(self, clientsoc):
+        """
+        this function will mine the unverified transaction
+        """
         result = self.blockChain.mining()
         response = {
             "status":200
@@ -56,7 +84,7 @@ class Peers:
 
         else:
             self.lock.acquire()
-            succ_count=0
+            succ_count = 0
             fail_count = 0
             for peers in self.all_peers_list:
                 temp_client_sock = socket(AF_INET, SOCK_STREAM)
@@ -74,10 +102,8 @@ class Peers:
                         fail_count+=1
                     break
 
-
         response1= json.loads(response)
         clientsoc.sendall(response1.encode())
-
 
 
     def handleTracker(self, trackerPort, trackerIp):
@@ -125,6 +151,7 @@ class Peers:
                 self.peerSock.sendall(addr_str.encode())
                 continue
            
+
     def p2p_server(self):
         """
         will act as a server and listen for the incoming connection from the other peers
@@ -157,7 +184,6 @@ class Peers:
                      this  part will handle validating the block
                      if the block is valid will be added to the chain and will perform mining
                      then send the success status
-
                     """
                     send_data = {}
                     res = self.blockChain.verify_add_data()
@@ -179,8 +205,9 @@ class Peers:
                     """
                     self.blockChain.add_new_transaction(data)
                     self.mine_unverified_transaction(clientsoc)
-
-
+                    clientsoc.sendall(b'added to the queue')
+                    print("added to the queue")
+                    clientsoc.close()
          
                 break
 
@@ -218,9 +245,7 @@ class Peers:
             temp_client_sock.close()
 
 
-               
-    
-           
+
     def p2pclient(self):
         #will act as a client
         #first initally send request to the other server to get the copy of the blockchain
@@ -232,7 +257,7 @@ class Peers:
         case 3: I have a new transaction broadcast to the other peers
         """
         all_threads = []
-        i =0
+        i = 0
         while (not self.all_peers_list and i<3):
             print("waitng for peers to e available")
             i+=1

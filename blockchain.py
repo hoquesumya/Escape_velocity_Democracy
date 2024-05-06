@@ -116,7 +116,7 @@ class BlockChain:
         previous_hash = "0"
         for block in chain:
             """indicate the genesis block"""
-            if block.block_id==0:
+            if block.block_id == 0:
                 previous_hash = block.my_hash
                 continue
 
@@ -125,11 +125,12 @@ class BlockChain:
                 break
             previous_hash = block.my_hash
         return res
-    
 
 
-    #this function will deal with if there is a block from the 
+
     def verify_add_data(self, block_data):
+        """
+        """
         #create the block
         block = Block(block_data["block_id"],
                       block_data["transaction"],
@@ -138,7 +139,7 @@ class BlockChain:
                       block_data["nonce"]
                       ) #todo
         proof = block_data["my_hash"]
-        added= self.add_block(block,proof)
+        added = self.add_block(block,proof)
         if not added:
             return False
         else:

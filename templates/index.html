@@ -10,9 +10,9 @@
 
     <form method="POST">
         <label for="passphrase">Passphrase (Encrypted with your private key):</label><br>
-        <input type="password" id="passphrase" name="passphrase" required><br>
+        <input type="password" id="passphrase" name="passphrase" value="test" required><br>
         <label for="key">Your Public Key:</label><br>
-        <textarea type="text" id="key" name="key" required></textarea><br>
+        <textarea type="text" id="key" name="key" placeholder="test" required>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGJaKc6UQmNiTfF1FnFB4fTa24RYiM61e5fat8Uc6KlrnfY3oWvRdmMAAaJYQG0bEykPRLlnYIAZXpFQnK2Fdz112EMSmsdeI6ROncu/44ziCPVg3YBin62JR4SPwrZuQ/X8JZYuZFFi15U9WghmBwNpedVy2l0pb0pSnLbHi+COgKPkXaA0sMpJJpZ8jEHbUJcdaAg7FWKO3+jH+TOxGnGepCCJ+DqfFm9uETLJ7taXwk1fH6iEgPYbvMdfkauNPH+UkzVPlHzFv6QDkJYSctQWhyCQXmFAEnjruc5iSE1p2E1nLtY2su7sYwRfzr9UQQhCQu0eePoBzIm0z6q/TkWJ/YWWcLy+1CKI/TH2aKmgV7LXClMam+1o3rmkuTY1fYFh716qce69nhsOfGfzGSRRqdri9wawrxe9Gb2eLc5+Ln+m1/P+BFklbkAj7hFh7NstqYvEzGxLF0NkIKSe31yGh/7bClfcvki+jtNii+2+0mBgJUzFOJWoko1VtASVU= caspar@sparkplug</textarea><br>
         <label for="vote">Your Vote:</label><br>
         <select id="vote" name="vote" required>
             {% for candidate in candidates %}
@@ -21,8 +21,11 @@
         </select><br>
         <input type="submit" value="Submit">
     </form>
-    </form>
 
+    {% if response %}
+        <h2>Server Response:</h2>
+        <p>{{ response }}</p>
+    {% endif %}
     <h2>Results</h2>
     <ul>
     {% for result in results %}
@@ -30,8 +33,5 @@
     {% endfor %}
     </ul>
 
-    <form method="POST" action="{{ url_for('reset') }}">
-        <input type="submit" value="Reset Votes">
-    </form>
 </body>
 </html>
