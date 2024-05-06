@@ -1,10 +1,7 @@
-from flask import Flask, request, render_template, redirect, url_for
-import socket
-import time
-import json
-import argparse
 import random
-import threading
+import socket
+
+from flask import Flask, render_template, request
 
 # get peer ip and peer port from a random line of vms.txt
 with open('static/vms.txt') as f:
