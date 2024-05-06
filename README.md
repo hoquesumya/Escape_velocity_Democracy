@@ -3,17 +3,5 @@
 ## Team name: votingLedger
 ## Team members (name, GitHub username): 
 1. Sumya Hoque, sh4242
-2. Caspar Lant, al4397
+2. Caspar Lant, caspar
 ## 
-
-# Installation and Setup
-1. Clone the repository
-2. Run the following command to install the required packages:
-```
-pip install -r requirements.txt
-```
-3. Run the following command to start the server:
-```
-python app.py
-```
-4. Open a web browser and go to `http://localhost:5000/` to access the web application.
