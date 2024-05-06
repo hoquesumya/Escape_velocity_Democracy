@@ -26,11 +26,9 @@ class Block:
         return self.my_hash
 
 
-
 """"
 this is the blockchain class
 """
-
 class BlockChain:
     def __init__(self):
         self.chain = []

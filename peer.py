@@ -1,3 +1,4 @@
+
 from socket import *
 import argparse
 import json
@@ -279,7 +280,7 @@ if __name__=='__main__':
 
     blockChain = BlockChain()
     blockChain.create_genesis_block()
-   
+  
 
     peer=Peers(peerPort,blockChain)
     #first registerwith the tracker and get all the avaliable tracker

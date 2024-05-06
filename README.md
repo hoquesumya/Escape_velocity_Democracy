@@ -3,6 +3,5 @@
 ## Team name: votingLedger
 ## Team members (name, GitHub username): 
 1. Sumya Hoque, sh4242
-2. Caspar Lant, al4397
+2. Caspar Lant, caspar
 ## 
-
