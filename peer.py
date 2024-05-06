@@ -279,14 +279,7 @@ if __name__=='__main__':
 
     blockChain = BlockChain()
     blockChain.create_genesis_block()
-    if peerPort == 49998:
-        tranaction = {
-                    "voter_id":"x",
-                    "name" : "john"
-                    }
-        blockChain.add_new_transaction(tranaction)
-        res = blockChain.mining()
-        print("res", res)
+   
 
     peer=Peers(peerPort,blockChain)
     #first registerwith the tracker and get all the avaliable tracker
