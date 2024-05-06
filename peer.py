@@ -3,45 +3,9 @@ import collections
 import json
 import threading
 import time
-from socket import *
+from socket import *  # noqa: F403
 
 from blockchain import BlockChain
-
-
-def cast_vote(self, voter_id, candidate, clientsoc):
-    """
-    Casts a vote in the blockchain network by packaging it into a transaction
-    and attempting to mine it into a block.
-
-    Args:
-        voter_id (str): The identifier for the voter.
-        candidate (str): The candidate or option the vote is for.
-        clientsoc (socket): The client socket to send feedback to after mining attempt.
-
-    Returns:
-        None
-    """
-    import datetime
-
-    # Create a transaction dictionary representing the vote
-    transaction = {
-        "voter_id": voter_id,
-        "candidate": candidate,
-        "timestamp": datetime.datetime.now().isoformat(),  # Include a timestamp for the transaction
-    }
-
-    # Assuming `add_new_transaction` adds the transaction to a pool
-    self.blockChain.add_new_transaction(transaction)
-
-    # Try to mine the transaction into a block
-    result = self.mine_unverified_transaction(clientsoc)
-
-    # Send feedback to the client based on the mining result
-    if result:
-        clientsoc.sendall(b"Vote cast and block mined successfully.")
-    else:
-        clientsoc.sendall(b"Failed to mine the block containing the vote.")
-
 
 def get_chain_and_send(clientsoc, blockChain):
     chains = []
@@ -208,7 +172,7 @@ class Peers:
         data1 = json.dumps(data)
 
         temp_client_sock.send(data1.encode())
-        print("connecting to the  peer")
+        print("connecting to the peer")
         temp_data = ""
         while True:
             data = temp_client_sock.recv(buffer).decode()
@@ -267,7 +231,6 @@ class Peers:
         after comparing the blockchain start reviewing the client transaction from the enqueue
         """
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="tracker.py",
@@ -317,3 +280,20 @@ if __name__ == "__main__":
     all_threads.append(t2)
 
     # peer.handleTracker(trackerPort,trackerIp)
+
+# tests using pytest
+def test_get_chain_and_send():
+    blockChain = BlockChain()
+    blockChain.create_genesis_block
+    blockChain.mining()
+    assert len(blockChain.chain) == 2
+
+def test_mine_unverified_transaction():
+    blockChain = BlockChain()
+    blockChain.create_genesis_block
+    blockChain.mining()
+    assert len(blockChain.chain) == 2
+    peer = Peers(5000, blockChain)
+    peer.mine_unverified_transaction()
+    assert len(blockChain.chain) == 3
+

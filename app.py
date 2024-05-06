@@ -33,6 +33,7 @@ def index():
 
         # Send data to the peer using the IP and port from command-line arguments
         response = send_data_to_peer(data, peer_ip, peer_port)
+
         return render_template('index.html', response=response, candidates=candidates)
     return render_template('index.html', response=None, candidates=candidates)
 
