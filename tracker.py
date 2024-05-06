@@ -36,8 +36,6 @@ class Tracker:
     
         finally:
             clientsoc.close()
-       
-whi
 
     def update_peers(self,clientsoc):
        
