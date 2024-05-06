@@ -29,7 +29,6 @@ class Block:
             self.my_hash= hashlib.sha256(hash_data()).hexdigest()
         return self.my_hash
 
-
 """"
 this is the blockchain class
 """
