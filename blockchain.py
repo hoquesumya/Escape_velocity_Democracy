@@ -166,11 +166,29 @@ class BlockChain:
             self.add_block(block,proof)
             self.unconfirmed_transaction=[]
             return True
+        
     def get_all_chain(self):
         chains=[]
         for i in self.chain:
             chains.append(i.__dict__)
         return chains
+    
+    def validate_chain(self):
+        res= True
+        previous_hash = "0"
+        for block in self.chain:
+            """indicate the genesis block"""
+            if block.block_id == 0:
+                previous_hash = block.my_hash
+                continue
+
+            if not self.is_valid_proof(block,block.my_hash) or previous_hash!=block.previous_hash:
+                res= False
+                break
+            previous_hash = block.my_hash
+        return res
+
+
 
 
 
