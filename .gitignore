@@ -1,3 +1,4 @@
 .vercel
 bin
 __pycache__
+*.mov
