@@ -231,6 +231,18 @@ class Peers:
         after comparing the blockchain start reviewing the client transaction from the enqueue
         """
 
+    def send_blockchain_json_object(self, clientsoc):
+        """
+        send the blockchain to the client for visualization
+        """
+        chains = []
+        for block in self.blockChain.chain:
+            chains.append(block.__dict__)
+        data = {"len": len(chains), "chain": chains}
+        data1 = json.dumps(data)
+        data_temp = data1 + "done"
+        clientsoc.sendall(data_temp.encode())
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="tracker.py",

@@ -37,6 +37,12 @@ def index():
         return render_template('index.html', response=response, candidates=candidates)
     return render_template('index.html', response=None, candidates=candidates)
 
+@app.route('/result', methods=['GET'])
+def show_results():
+    # request blockchain data from the peer and display it on the page
+    response = send_data_to_peer("request_blockchain", peer_ip, peer_port)
+    return render_template('results.html', response=response)
+
 def send_data_to_peer(data, ip, port):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
