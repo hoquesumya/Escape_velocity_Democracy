@@ -52,21 +52,21 @@ def get_init_blockchain(i,blockChain):
             while True:
                 data = temp_client_sock.recv(buffer).decode()
                 #print(data)
-                temp_data+=data
+                temp_data += data
                 if "done" in temp_data:
                   temp_data = temp_data.replace("done", "")
                   break
             #print(temp_data)
             
             temp = json.loads(temp_data)
-            res = blockChain.get_the_longest_chain(temp["len"],temp["chain"])
+            res  = blockChain.get_the_longest_chain(temp["len"],temp["chain"])
             print("logest_chain is",res)
             temp_client_sock.close()
 
     
 
 def get_chain_and_send(clientsoc,blockChain):
-    chains=[]
+    chains = []
     for block in blockChain.chain:
         chains.append(block.__dict__)
     data = {
@@ -74,9 +74,9 @@ def get_chain_and_send(clientsoc,blockChain):
         "chain":chains
     }
     data1 = json.dumps(data)
-    data_temp=""
-    data_temp+=data1
-    data_temp+="done"
+    data_temp  = ""
+    data_temp += data1
+    data_temp += "done"
 
     clientsoc.sendall(data_temp.encode())
 
@@ -107,7 +107,7 @@ class Peers:
             }
 
         else:
-            print("my chain is",self.blockChain.get_all_chain())
+            print("my chain is", self.blockChain.get_all_chain())
             lock.acquire()
 
             succ_count = 0
@@ -199,11 +199,11 @@ class Peers:
 
         self.peerSockserver.bind(('',self.port))
         self.peerSockserver.listen(1)
-        buffer_size=1024
+        buffer_size = 1024
         while True:
             print("accepting again")
             temp_data1 = ""
-            temp2=None
+            temp2      = None
             clientsoc, addr =self.peerSockserver.accept()
             print(addr)
             while True:
