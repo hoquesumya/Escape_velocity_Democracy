@@ -139,6 +139,7 @@ class Peers:
                     print("received status is",data)
                     try:
                         data = json.loads(data)
+                    
                     except json.JSONDecodeError as e:
                         print(f"Error decoding JSON: {e}")
 
@@ -324,25 +325,7 @@ class Peers:
 
         print(f"Sending vote results to client: {data_json}")
         clientsoc.sendall(data_json.encode())
-    '''
-    
-    def check_chain_validity_for_tampering(self):
-        """
-        this function will check if block has been tempered. if so will go for the longest 
-        chain
-        """
-        
-        interval = 60
 
-        time.sleep(interval)
-
-        while len(self.blockChain.chain>1):
-             res = self.blockChain.validate_chain()
-             if res == False:
-                  p2pclient()
-             time.sleep(interval)
-             
-    '''
     
 
 
@@ -379,10 +362,3 @@ if __name__=='__main__':
     t2.start()
     all_threads.append(t2)
     
-    '''
-    
-    t2 = threading.Thread(target=peer.check_chain_validity_for_tampering, args=())
-    t2.start()
-    all_threads.append(t2)
-
-    '''

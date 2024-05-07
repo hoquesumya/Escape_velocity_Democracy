@@ -37,6 +37,7 @@ class BlockChain:
     
     
     def add_block(self,new_block,proof):
+    
         prev_hash = self.get_latest_block().my_hash
         if prev_hash!=new_block.previous_hash:
             return False
@@ -173,6 +174,7 @@ class BlockChain:
         self.unconfirmed_transaction.append(transaction)
 
     def mining(self):
+        res = True
         """if the above funnction returned true then broadcast the last node to the all peers"""
         if not self.unconfirmed_transaction:
             return False
@@ -183,10 +185,15 @@ class BlockChain:
             block = Block(last_block.block_id+1, 
                           self.unconfirmed_transaction,
                           timeS=time.time(),previous_hash=prev_hash)
+            block_data = block.__dict__
+            if self.check_dup_id(block_data)==False:
+                self.unconfirmed_transaction=[]
+                return False
+            
             proof = self.proof_of_work(block)
-            self.add_block(block,proof)
+            res = self.add_block(block,proof)
             self.unconfirmed_transaction=[]
-            return True
+            return res
         
     def get_all_chain(self):
         chains = []
@@ -194,20 +201,37 @@ class BlockChain:
             chains.append(i.__dict__)
         return chains
     
-    def validate_chain(self):
-        res= True
-        previous_hash = "0"
-        for block in self.chain:
-            """indicate the genesis block"""
-            if block.block_id == 0:
-                previous_hash = block.my_hash
-                continue
 
-            if not self.is_valid_proof(block,block.my_hash) or previous_hash!=block.previous_hash:
-                res= False
-                break
-            previous_hash = block.my_hash
-        return res
+    def check_dup_id(self, block_data):
+        chain = self.get_all_chain()
+        new_voter_ids = set()  # To store voterIDs from the new block's transactions
+
+        # Check if the transactions are a list or a single dictionary
+        print("block data is", block_data["transaction"])
+        transactions = block_data["transaction"]
+        if isinstance(transactions, dict):
+            transactions = [transactions]  # Convert to list if only one transaction
+    
+        # Collect all new voterIDs from the incoming block
+        for transaction in transactions:
+            new_voter_ids.add(transaction["voterID"])
+            print(transaction["voterID"])
+        
+        print("new voter id",chain)
+        # Check for uniqueness of each new voterID against all transactions in the chain\
+        for block in chain:
+            block_transactions = block["transaction"]
+            print("current", block_transactions)
+            if isinstance(block_transactions, dict):
+                block_transactions = [block_transactions]  # Convert to list if only one transaction
+            for existing_transaction in block_transactions:
+                if existing_transaction["voterID"] in new_voter_ids:
+                    print("found duplicate")
+                    print(existing_transaction["voterID"])
+                    return False  # Duplicate voterID found
+        return True
+
+    
 
 
 
