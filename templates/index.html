@@ -5,14 +5,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
 
 </head>
-<body>f
+<body>
     <h1>Voting System</h1>
 
     <form method="POST">
+        <!-- voter id input -->
+        <label for="voter_id">Voter ID:</label><br>
+        <input type="text" id="voter_id" name="voter_id" value="Caspar" required><br>
         <label for="passphrase">Passphrase (Encrypted with your private key):</label><br>
         <input type="password" id="passphrase" name="passphrase" value="test" required><br>
         <label for="key">Your Public Key:</label><br>
-        <textarea type="text" id="key" name="key" placeholder="test" required>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGJaKc6UQmNiTfF1FnFB4fTa24RYiM61e5fat8Uc6KlrnfY3oWvRdmMAAaJYQG0bEykPRLlnYIAZXpFQnK2Fdz112EMSmsdeI6ROncu/44ziCPVg3YBin62JR4SPwrZuQ/X8JZYuZFFi15U9WghmBwNpedVy2l0pb0pSnLbHi+COgKPkXaA0sMpJJpZ8jEHbUJcdaAg7FWKO3+jH+TOxGnGepCCJ+DqfFm9uETLJ7taXwk1fH6iEgPYbvMdfkauNPH+UkzVPlHzFv6QDkJYSctQWhyCQXmFAEnjruc5iSE1p2E1nLtY2su7sYwRfzr9UQQhCQu0eePoBzIm0z6q/TkWJ/YWWcLy+1CKI/TH2aKmgV7LXClMam+1o3rmkuTY1fYFh716qce69nhsOfGfzGSRRqdri9wawrxe9Gb2eLc5+Ln+m1/P+BFklbkAj7hFh7NstqYvEzGxLF0NkIKSe31yGh/7bClfcvki+jtNii+2+0mBgJUzFOJWoko1VtASVU= caspar@sparkplug</textarea><br>
+        <textarea type="text" id="key" name="key" placeholder="test" required>ssh-rsa QDGJaKc6UQmN</textarea><br>
         <label for="vote">Your Vote:</label><br>
         <select id="vote" name="vote" required>
             {% for candidate in candidates %}

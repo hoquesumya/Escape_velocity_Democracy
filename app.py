@@ -25,6 +25,7 @@ def index():
 
     if request.method == 'POST':
         # Retrieve data from the form
+        voterID = request.form['voter_id']
         passphrase = request.form['passphrase']
         public_key = request.form['key']
         vote = request.form['vote']
@@ -33,6 +34,7 @@ def index():
         #data = f"{passphrase},{public_key},{vote}"
         data= {
             "msg_type":"transaction",
+            "voterID":voterID,
             "passphrase":passphrase,
             "key":public_key,
             "vote":vote

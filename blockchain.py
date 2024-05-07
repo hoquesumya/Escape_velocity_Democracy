@@ -129,8 +129,14 @@ class BlockChain:
 
     def verify_add_data(self, block_data):
         """
-
+        Ensures that the block is valid then adds it to the chain. Checks if the voterID is unique
         """
+        #ensure that voterID in transaction is unique
+        chain = self.get_all_chain()
+        for block in chain:
+            if block["transaction"]["voterID"] == block_data["transaction"]["voterID"]:
+                return False
+            
         #create the block
         block = Block(block_data["block_id"],
                       block_data["transaction"],
@@ -168,7 +174,7 @@ class BlockChain:
             return True
         
     def get_all_chain(self):
-        chains=[]
+        chains = []
         for i in self.chain:
             chains.append(i.__dict__)
         return chains
