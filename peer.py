@@ -1,4 +1,3 @@
-
 from socket import *
 import argparse
 import json
@@ -286,6 +285,8 @@ class Peers:
         data1 = json.dumps(data)
         data_temp = data1 + "done"
         clientsoc.sendall(data_temp.encode())
+
+    # def send_results_to_client
     '''
     
     
@@ -349,9 +350,3 @@ if __name__=='__main__':
     all_threads.append(t2)
 
     '''
-
-
- 
-
-
-    
