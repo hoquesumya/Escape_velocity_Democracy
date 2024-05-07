@@ -1,10 +1,7 @@
-from flask import Flask, request, render_template, redirect, url_for
-import socket
-import time
-import json
-import argparse
 import random
-import threading
+import socket
+
+from flask import Flask, render_template, request
 
 # get peer ip and peer port from a random line of vms.txt
 with open('static/vms.txt') as f:
@@ -44,8 +41,15 @@ def index():
 
         # Send data to the peer using the IP and port from command-line arguments
         response = send_data_to_peer(data, peer_ip, peer_port)
+
         return render_template('index.html', response=response, candidates=candidates)
     return render_template('index.html', response=None, candidates=candidates)
+
+@app.route('/result', methods=['GET'])
+def show_results():
+    # request blockchain data from the peer and display it on the page
+    response = send_data_to_peer("request_blockchain", peer_ip, peer_port)
+    return render_template('results.html', response=response)
 
 def send_data_to_peer(data, ip, port):
     try:

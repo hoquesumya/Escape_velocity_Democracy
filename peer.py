@@ -270,21 +270,6 @@ class Peers:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__=='__main__':
     parser = argparse.ArgumentParser(
                     prog='tracker.py',
@@ -310,13 +295,7 @@ if __name__=='__main__':
     t.start()
     all_threads.append(t)
 
-    '''
-    
-    
-    t1 = threading.Thread(target=peer.p2pclient, args=())
-    t1.start()
-    all_threads.append(t1)
-    '''
+
     p2pclient(blockChain=blockChain)
         
 
@@ -326,9 +305,6 @@ if __name__=='__main__':
     all_threads.append(t2)
 
  
-
-
-    #peer.handleTracker(trackerPort,trackerIp)
 
 
     

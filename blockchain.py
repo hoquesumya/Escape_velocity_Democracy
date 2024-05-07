@@ -68,7 +68,7 @@ class BlockChain:
     
 
     def is_valid_proof(self,block,block_hash):
-        print("hello2")
+        print("block_hash", block_hash)
         print("hash", block_hash==block.create_hash())
         print(block_hash[:2])
         return (block_hash[:2]=="0"*self.difficulty and block_hash==block.create_hash())
@@ -127,9 +127,9 @@ class BlockChain:
         return res
 
 
-
     def verify_add_data(self, block_data):
         """
+
         """
         #create the block
         block = Block(block_data["block_id"],
