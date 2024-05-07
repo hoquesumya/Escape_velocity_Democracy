@@ -34,6 +34,7 @@ class Tracker:
                         break
                     data = data.decode()
                     data = json.loads(data)
+                    print(data)
                     if data["action"] == "unregister":
                         self.active_peers.remove((data["ip"],data["port"]))
                         break
@@ -47,7 +48,7 @@ class Tracker:
                             }
                             print(temp_addr)
                     
-                            self.update_peers(clientsoc)
+                        self.update_peers(clientsoc)
     
         finally:
             clientsoc.close()

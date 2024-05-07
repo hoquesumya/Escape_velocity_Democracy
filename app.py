@@ -31,8 +31,16 @@ def index():
         passphrase = request.form['passphrase']
         public_key = request.form['key']
         vote = request.form['vote']
+        
 
-        data = f"{passphrase},{public_key},{vote}"
+        #data = f"{passphrase},{public_key},{vote}"
+        data= {
+            "msg_type":"transaction",
+            "passphrase":passphrase,
+            "key":public_key,
+            "vote":vote
+
+        }
 
         # Send data to the peer using the IP and port from command-line arguments
         response = send_data_to_peer(data, peer_ip, peer_port)
@@ -43,7 +51,11 @@ def send_data_to_peer(data, ip, port):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.connect((ip, port))
-            sock.sendall(data.encode('utf-8'))
+            data1 = json.dumps(data)
+            temp_data = ""
+            temp_data+=data1
+            temp_data+="done"
+            sock.sendall(temp_data.encode('utf-8'))
             # Optionally receive a response
             response = sock.recv(1024)
             return f"Received from server: {response.decode('utf-8')}"
@@ -51,4 +63,5 @@ def send_data_to_peer(data, ip, port):
         return f"An error occurred: {e}"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+   app.run(debug=True)
+   #app.run(host='0.0.0.0', port=6000)

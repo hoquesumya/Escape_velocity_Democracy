@@ -101,10 +101,10 @@ class BlockChain:
         if  length > current_len and self.check_chain_validity(chain_temp):
 
             current_len = length
-            longest_chain=chain
+            longest_chain=chain_temp
         
         if longest_chain:
-            chain = longest_chain
+            self.chain = longest_chain
             return True
         
         return False
@@ -166,34 +166,12 @@ class BlockChain:
             self.add_block(block,proof)
             self.unconfirmed_transaction=[]
             return True
-        
-    """if the above funnction returned true then broadcast"""
-'''
+    def get_all_chain(self):
+        chains=[]
+        for i in self.chain:
+            chains.append(i.__dict__)
+        return chains
 
-if __name__=='__main__':
-    blokChain = BlockChain()
-    blokChain.create_genesis_block()
-    print(blokChain.get_latest_block().transaction)
-    tranaction = {
-                  "voter_id":"x",
-                  "name" : "john"
-                  }
-    blokChain.add_new_transaction(tranaction)
-    res = blokChain.mining()
-    print(res)
-
-    tranaction2 = {
-                  "voter_id":"x",
-                  "name" : "john Doe"}
-    chains=[]
-    for block in blokChain.chain:
-        chains.append(block.__dict__)
-    print(chains)
-
-'''
-
-    
-   
 
 
 
