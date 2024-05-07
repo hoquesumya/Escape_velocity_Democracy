@@ -69,7 +69,7 @@ class Tracker:
         threads=[]
         try:
             while True:
-                print("accepting again")
+                print("Accepting connections...")
                 clientsoc, addr =self.s.accept()
                 print(addr)
                 self.t = threading.Thread(target=self.handlePeersConnections, args=(clientsoc,addr,))

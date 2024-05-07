@@ -7,7 +7,7 @@ ROUTING_TABLE = 'static/local_instances.txt'
 
 # get peer ip and peer port from a random line of vms.txt
 with open(ROUTING_TABLE) as f:
-    random.seed(100) # control reproducibility in testing
+    # random.seed(1w00) # control reproducibility in testing
     peer_ip, peer_port = random.choice(f.readlines()).strip().split(',')
     peer_port = int(peer_port)
     print(f"Peer IP: {peer_ip}, Peer Port: {peer_port}")

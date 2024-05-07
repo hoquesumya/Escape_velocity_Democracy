@@ -19,12 +19,12 @@ def p2pclient(blockChain):
         all_threads = []
         i = 0
         while (not all_peers_list and i<3):
-            print("waitng for peers to e available")
+            print("Waiting for peers to become available...")
             i+=1
             time.sleep(1)
-        #send the all peers to get the initial block
-        print("ip's are available")
-        #multipl client multiple socet
+        # send the all peers to get the initial block
+        print("all peers are",all_peers_list)
+        # multiple client multiple sockets
         lock.acquire()
 
         for i in all_peers_list:
@@ -61,7 +61,7 @@ def get_init_blockchain(i,blockChain):
             
             temp = json.loads(temp_data)
             res  = blockChain.get_the_longest_chain(temp["len"],temp["chain"])
-            print("logest_chain is",res)
+            print("longest_chain is",res)
             temp_client_sock.close()
 
     
@@ -210,7 +210,7 @@ class Peers:
         self.peerSockserver.listen(1)
         buffer_size = 1024
         while True:
-            print("accepting again")
+            print("Accepting connections...")
             temp_data1 = ""
             temp2      = None
             clientsoc, addr =self.peerSockserver.accept()
@@ -218,7 +218,7 @@ class Peers:
             while True:
                 data = clientsoc.recv(buffer_size)
                 if not data:
-                        print("data is done")
+                        print("Data receieved successfully")
                         break
                 temp_data1+=data.decode()
                 #print("data",data)
@@ -231,9 +231,9 @@ class Peers:
             temp_data2 = json.loads(temp2[0])
             #print("temp_data",temp_data2)
 
-            '''newly connected peer wants to have the copy of the blockchain'''
+            ''' newly connected peer wants to have the copy of the blockchain'''
             if temp_data2["msg_type"] == "needBlockchain":
-                print("hello")
+                print("sending the blockchain to the peer")
                    # clientsoc.sendall(b'sent all the blockchains')
                 get_chain_and_send(clientsoc=clientsoc,blockChain=self.blockChain)
 
@@ -249,7 +249,7 @@ class Peers:
                      if the block is valid will be added to the chain and will perform mining
                      then send the success status
                     """
-                    print("found data")
+                    print("Received block from peer. Validating...")
                     
                     send_data = {}
                     temp = temp_data2["data"]
@@ -263,11 +263,12 @@ class Peers:
 
                     
                     else:
-                        print("yay, i got a valid block")
+                        print("Valid block received. Adding to chain...")
                         send_data = {
                             "status":200
                          }
-                        print("i am other peer and my updated chain is",self.blockChain.get_all_chain())
+                        print("I am another peer and my chain is",
+                              self.blockChain.get_all_chain())
 
                     send_data1 = json.dumps(send_data)              
                     clientsoc.sendall(send_data1.encode())
