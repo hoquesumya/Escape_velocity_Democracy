@@ -5,3 +5,12 @@
 1. Sumya Hoque, sh4242
 2. Caspar Lant, caspar
 ## 
+
+<!-- embed slide1.jpg -->
+![slide1](static/img/slide1.jpg)
+
+<!-- embed slide2.jpg -->
+![slide2](static/img/slide2.jpg)
+
+<!-- embed slide3.jpg -->
+![slide3](static/img/slide3.jpg)
