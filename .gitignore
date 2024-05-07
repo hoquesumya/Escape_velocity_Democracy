@@ -1,5 +1,9 @@
 .vercel
 bin
-__pycache__
+__pycache__/
 *.pyc
 *.mov
+.DS_Store
+Escape Velocity for Democracy.pdf
+*.DS_Store
+__pycache__/app.cpython-311.pyc
