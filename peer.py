@@ -132,8 +132,16 @@ class Peers:
                 temp_client_sock.sendall(temp_data.encode())
                 while True:
                     data = temp_client_sock.recv(1024).decode()
+                    if "done" in data:
+                        # Remove 'done' and any extraneous characters beyond it
+                        data = data.split("done")[0]
+
                     print("received status is",data)
-                    data = json.loads(data)
+                    try:
+                        data = json.loads(data)
+                    except json.JSONDecodeError as e:
+                        print(f"Error decoding JSON: {e}")
+
                     if data["status"] == 200:
                         print("a valid block from the peer")
                         succ_count+=1
@@ -229,6 +237,11 @@ class Peers:
                    # clientsoc.sendall(b'sent all the blockchains')
                 get_chain_and_send(clientsoc=clientsoc,blockChain=self.blockChain)
 
+            elif temp_data2["msg_type"] == "get_results":
+                """
+                this will send the vote results to the client
+                """
+                self.send_vote_results_to_client(clientsoc)
 
             elif temp_data2["msg_type"] == "incoming_block":
                     """
@@ -286,9 +299,31 @@ class Peers:
         data_temp = data1 + "done"
         clientsoc.sendall(data_temp.encode())
 
-    # def send_results_to_client 
+    def send_vote_results_to_client(self, clientsoc):
+        """
+        Sends the frequency of each vote value on the blockchain. Handles transactions that may be
+        either a single dictionary or a list of dictionaries.
+        """
+        data = {}
+        # Loop through each block in the blockchain
+        for block in self.blockChain.chain:
+            # Handle both single transaction dictionary and list of transactions
+            transactions = block.transaction if isinstance(block.transaction, list) else [block.transaction]
+            # Aggregate votes from transactions
+            for transaction in transactions:
+                if 'vote' in transaction:  # Check if 'vote' key exists in transaction
+                    vote = transaction['vote']
+                    if vote not in data:
+                        data[vote] = 1
+                    else:
+                        data[vote] += 1
+
+        # Prepare the data for sending
+        data_json = json.dumps(data) + "done"
+
+        print(f"Sending vote results to client: {data_json}")
+        clientsoc.sendall(data_json.encode())
     '''
-    
     
     def check_chain_validity_for_tampering(self):
         """

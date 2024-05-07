@@ -131,11 +131,26 @@ class BlockChain:
         """
         Ensures that the block is valid then adds it to the chain. Checks if the voterID is unique
         """
-        #ensure that voterID in transaction is unique
         chain = self.get_all_chain()
+        new_voter_ids = set()  # To store voterIDs from the new block's transactions
+
+        # Check if the transactions are a list or a single dictionary
+        transactions = block_data["transaction"]
+        if isinstance(transactions, dict):
+            transactions = [transactions]  # Convert to list if only one transaction
+    
+        # Collect all new voterIDs from the incoming block
+        for transaction in transactions:
+            new_voter_ids.add(transaction["voterID"])
+    
+        # Check for uniqueness of each new voterID against all transactions in the chain
         for block in chain:
-            if block["transaction"]["voterID"] == block_data["transaction"]["voterID"]:
-                return False
+            block_transactions = block["transaction"]
+            if isinstance(block_transactions, dict):
+                block_transactions = [block_transactions]  # Convert to list if only one transaction
+            for existing_transaction in block_transactions:
+                if existing_transaction["voterID"] in new_voter_ids:
+                    return False  # Duplicate voterID found
             
         #create the block
         block = Block(block_data["block_id"],

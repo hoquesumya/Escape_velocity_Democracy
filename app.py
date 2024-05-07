@@ -3,8 +3,10 @@ import socket
 import json
 from flask import Flask, render_template, request
 
+ROUTING_TABLE = 'static/local_instances.txt'
+
 # get peer ip and peer port from a random line of vms.txt
-with open('static/vms.txt') as f:
+with open(ROUTING_TABLE) as f:
     random.seed(100) # control reproducibility in testing
     peer_ip, peer_port = random.choice(f.readlines()).strip().split(',')
     peer_port = int(peer_port)
@@ -29,8 +31,8 @@ def index():
         passphrase = request.form['passphrase']
         public_key = request.form['key']
         vote = request.form['vote']
+        vote = vote.replace('\r', '').replace('\n', '')
         
-
         #data = f"{passphrase},{public_key},{vote}"
         data= {
             "msg_type":"transaction",
@@ -38,7 +40,6 @@ def index():
             "passphrase":passphrase,
             "key":public_key,
             "vote":vote
-
         }
 
         # Send data to the peer using the IP and port from command-line arguments
@@ -47,14 +48,36 @@ def index():
         return render_template('index.html', response=response, candidates=candidates)
     return render_template('index.html', response=None, candidates=candidates)
 
-@app.route('/result', methods=['GET'])
+# @app.route('/blockchain', methods=['GET'])
+# def show_blockchain():
+#     # request blockchain data from the peer and display it on the page
+#     data = {
+#         "msg_type":"request_blockchain"
+#     }
+#     response = send_data_to_peer(data, peer_ip, peer_port)
+#     return render_template('blockchain.html', response=response)
+
+@app.route('/results', methods=['GET'])
 def show_results():
-    # request blockchain data from the peer and display it on the page
+    # request results data from the peer and display it on the page
     data = {
-        "msg_type":"request_blockchain"
+        "msg_type":"get_results"
     }
     response = send_data_to_peer(data, peer_ip, peer_port)
-    return render_template('results.html', response=response)
+    print(response)
+    # response: Received from server: {"Oliver Tambo": 2, "Giuseppe Garibaldi": 1, "Daniel Ortega": 1, "Karl Marx": 3}done
+    # remove received from server: and done
+    response = response.replace("Received from server: ", "").replace("done", "")
+    print(response)    
+    if response:
+        results = json.loads(response)
+    else:
+        results = None
+
+    # order by number of votes
+    if results:
+        results = dict(sorted(results.items(), key=lambda item: item[1], reverse=True))
+    return render_template('results.html', results=results)
 
 def send_data_to_peer(data, ip, port):
     try:

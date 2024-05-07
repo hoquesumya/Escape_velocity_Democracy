@@ -3,31 +3,136 @@
 <head>
     <title>Voting Results</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 <body>
-    <h2>Voting Results</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Block ID</th>
-                <th>Time</th>
-                <th>Voter ID</th>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for block in blockchain.chain %}
-                {% for transaction in block.transaction %}
-                    <tr>
-                        <td>{{ block.block_id }}</td>
-                        <td>{{ block.timeS|date("Y-m-d H:i:s") }}</td>
-                        <td>{{ transaction.voter_id }}</td>
-                        <td>{{ transaction.name }}</td>
-                    </tr>
-                {% endfor %}
-            {% endfor %}
-        </tbody>
-    </table>
+    <h1>Voting Results</h1>
+
+    <!-- pi chart of results -->
+    <!-- <canvas id="resultsChart" width="300" height="300"></canvas>
+    <script>
+        var ctx = document.getElementById('resultsChart').getContext('2d');
+        var resultsChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: [
+                    {% for result in results %}
+                        '{{ result }}',
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Votes',
+                    data: [
+                        {% for result in results %}
+                            {{ results[result] }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99,  132, 0.6)',
+                        'rgba(54,  162, 235, 0.6)',
+                        'rgba(255, 206, 86,  0.6)',
+                        'rgba(75,  192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64,  0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script> -->
+
+    <!-- visualize results as an animated horizontal bar chart -->
+
+    <canvas id="resultsChart" width="500" height="300"></canvas>
+    <script>
+        var ctx = document.getElementById('resultsChart').getContext('2d');
+        var resultsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for result in results %}
+                        '{{ result }}',
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Votes',
+                    data: [
+                        {% for result in results %}
+                            {{ results[result] }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99,  132, 0.8)',
+                        'rgba(54,  162, 235, 0.8)',
+                        'rgba(255, 206, 86,  0.8)',
+                        'rgba(75,  192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64,  0.8)',
+                        'rgba(233, 30,  99,  0.8)',  // Pink 500
+                        'rgba(0, 150, 136,  0.8)'    // Teal 500
+                    ],
+                    borderColor: [
+                        'rgba(255, 99,  132, 0.8)',
+                        'rgba(54,  162, 235, 0.8)',
+                        'rgba(255, 206, 86,  0.8)',
+                        'rgba(75,  192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64,  0.8)',
+                        'rgba(233, 30,  99,  0.8)',  // Pink 500
+                        'rgba(0, 150, 136,  0.8)'    // Teal 500
+                        ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false,
+                        text: 'Votes by Candidate',
+                        color: 'white'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: 'white'
+                        }
+                    }
+                }
+            }
+        });       
+
+    </script>
+
+    <br>
+    <button onclick="window.location.href='{{ url_for('index') }}';">Back to Voting</button>
+
 </body>
 </html>
