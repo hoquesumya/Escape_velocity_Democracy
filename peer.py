@@ -11,8 +11,6 @@ from blockchain import BlockChain
 all_peers_list=set()
 lock = threading.Lock()
 
-
-
 def p2pclient(blockChain):
     
         all_threads = []
