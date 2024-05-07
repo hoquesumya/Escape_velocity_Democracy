@@ -13,6 +13,8 @@ lock = threading.Lock()
 
 
 
+
+
 def p2pclient(blockChain):
     
         all_threads = []
@@ -257,6 +259,10 @@ class Peers:
 
                     send_data1 = json.dumps(send_data)              
                     clientsoc.sendall(send_data1.encode())
+
+            
+            elif temp_data2["msg_type"]=="request_blockchain":
+                 self.send_blockchain_json_object(clientsoc)
                         
                     
             else:
@@ -267,6 +273,40 @@ class Peers:
          
                 
             clientsoc.close()
+    
+
+    def send_blockchain_json_object(self, clientsoc):
+        """
+        send the blockchain to the client for visualization
+        """
+        chains = []
+        for block in self.blockChain.chain:
+            chains.append(block.__dict__)
+        data = {"len": len(chains), "chain": chains}
+        data1 = json.dumps(data)
+        data_temp = data1 + "done"
+        clientsoc.sendall(data_temp.encode())
+    '''
+    
+    
+    def check_chain_validity_for_tampering(self):
+        """
+        this function will check if block has been tempered. if so will go for the longest 
+        chain
+        """
+        
+        interval = 60
+
+        time.sleep(interval)
+
+        while len(self.blockChain.chain>1):
+             res = self.blockChain.validate_chain()
+             if res == False:
+                  p2pclient()
+             time.sleep(interval)
+             
+    '''
+    
 
 
 
@@ -298,11 +338,18 @@ if __name__=='__main__':
 
     p2pclient(blockChain=blockChain)
         
-
-    
     t2 = threading.Thread(target=peer.p2p_server, args=())
     t2.start()
     all_threads.append(t2)
+    
+    '''
+    
+    t2 = threading.Thread(target=peer.check_chain_validity_for_tampering, args=())
+    t2.start()
+    all_threads.append(t2)
+
+    '''
+
 
  
 
