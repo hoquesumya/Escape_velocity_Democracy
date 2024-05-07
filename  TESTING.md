@@ -24,6 +24,7 @@ python3 tracker.py 60000
 python3 peer.py 49998 127.0.0.1 60000
 python3 peer.py 49999 127.0.0.1 60000
 python3 peer.py 50000 127.0.0.1 60000
+(optionally) python3 peer.py 50001 127.0.0.1 60000
 ```
 
 3. Run the client:
