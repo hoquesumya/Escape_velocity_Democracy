@@ -68,7 +68,7 @@ class BlockChain:
     
 
     def is_valid_proof(self,block,block_hash):
-        print("hello2")
+        print("block_hash", block_hash)
         print("hash", block_hash==block.create_hash())
         print(block_hash[:2])
         return (block_hash[:2]=="0"*self.difficulty and block_hash==block.create_hash())
@@ -101,10 +101,10 @@ class BlockChain:
         if  length > current_len and self.check_chain_validity(chain_temp):
 
             current_len = length
-            longest_chain=chain
+            longest_chain=chain_temp
         
         if longest_chain:
-            chain = longest_chain
+            self.chain = longest_chain
             return True
         
         return False
@@ -127,10 +127,16 @@ class BlockChain:
         return res
 
 
-
     def verify_add_data(self, block_data):
         """
+        Ensures that the block is valid then adds it to the chain. Checks if the voterID is unique
         """
+        #ensure that voterID in transaction is unique
+        chain = self.get_all_chain()
+        for block in chain:
+            if block["transaction"]["voterID"] == block_data["transaction"]["voterID"]:
+                return False
+            
         #create the block
         block = Block(block_data["block_id"],
                       block_data["transaction"],
@@ -167,33 +173,29 @@ class BlockChain:
             self.unconfirmed_transaction=[]
             return True
         
-    """if the above funnction returned true then broadcast"""
-'''
-
-if __name__=='__main__':
-    blokChain = BlockChain()
-    blokChain.create_genesis_block()
-    print(blokChain.get_latest_block().transaction)
-    tranaction = {
-                  "voter_id":"x",
-                  "name" : "john"
-                  }
-    blokChain.add_new_transaction(tranaction)
-    res = blokChain.mining()
-    print(res)
-
-    tranaction2 = {
-                  "voter_id":"x",
-                  "name" : "john Doe"}
-    chains=[]
-    for block in blokChain.chain:
-        chains.append(block.__dict__)
-    print(chains)
-
-'''
-
+    def get_all_chain(self):
+        chains = []
+        for i in self.chain:
+            chains.append(i.__dict__)
+        return chains
     
-   
+    def validate_chain(self):
+        res= True
+        previous_hash = "0"
+        for block in self.chain:
+            """indicate the genesis block"""
+            if block.block_id == 0:
+                previous_hash = block.my_hash
+                continue
+
+            if not self.is_valid_proof(block,block.my_hash) or previous_hash!=block.previous_hash:
+                res= False
+                break
+            previous_hash = block.my_hash
+        return res
+
+
+
 
 
 
