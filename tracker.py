@@ -8,25 +8,35 @@ import threading
 import json
 
 class Tracker:
+    """
+        multi-threaded tracker
+        after accepting each request thread will be created 
+        such that alive peers can mantain connection with tracker
+        send its request to the tracker and gets response
+     """
     def __init__(self):
-        """
-        multi-threaded trackers
-        """
+       
         self.active_peers=set()
         self.t=None
         self.s=None
         self.stop_event = threading.Event()
 
+
+
     def handlePeersConnections(self,clientsoc,addr):
+        """"
+        this function is responsible for handling peer request
+        connections. 
         """
-        based on the data typ
-        """
+  
         buffer_size =1024
         temp_addr = {
         }
         try:
+            #will run until main thread sets the event to false
             while not self.stop_event.is_set():
                     data = clientsoc.recv(buffer_size)
+                    """when peer press CTRL+C this condition will be executed"""
                     if not data:
                         print("data is done")
                         self.active_peers.remove((temp_addr["ip"],temp_addr["port"]))
@@ -34,6 +44,7 @@ class Tracker:
                         break
                     data = data.decode()
                     data = json.loads(data)
+
                     print(data)
                     if data["action"] == "unregister":
                         self.active_peers.remove((data["ip"],data["port"]))
@@ -54,7 +65,7 @@ class Tracker:
             clientsoc.close()
 
     def update_peers(self,clientsoc):
-       
+       #send the list of active peers to a connected peer
        for i in self.active_peers:
             sending_data = json.dumps({"ip":i[0], "port":i[1]})
             sending_data+='\n'
@@ -63,6 +74,9 @@ class Tracker:
   
         
     def start_tracker(self,trackerPort):
+        """main function of running a tracker will cretae threads of connecetions
+        trackerport: command-line argument
+        """
         self.s = socket(AF_INET,SOCK_STREAM)
         self.s.bind(('',trackerPort))
         self.s.listen(1)
@@ -75,6 +89,7 @@ class Tracker:
                 self.t = threading.Thread(target=self.handlePeersConnections, args=(clientsoc,addr,))
                 self.t.start()
                 threads.append(self.t)
+                
         except KeyboardInterrupt:
             print("keyboard interrupted")
             self.stop_event.set()
