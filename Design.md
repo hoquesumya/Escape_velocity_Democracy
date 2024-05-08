@@ -7,10 +7,10 @@
 <b>Note: We have not implemented Forking support in our project</b>
 
  **File Structure**:
- app.py
- blockchain.py
- peer.py
- tracker.py
+   1. app.py
+   2. blockchain.py
+   3. peer.py
+   4. tracker.py
 
 ## Architecture Design:
 
