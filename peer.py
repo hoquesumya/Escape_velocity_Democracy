@@ -12,33 +12,47 @@ lock = threading.Lock()
 
 
 
-
-
 def p2pclient(blockChain):
-    
-        all_threads = []
+        """
+        this function 
+        inititates the peer client which will be 
+        called first when a peer joins to the network
+        upon joining the network this
+        function will requests the other peers to get the longest chain
+        in order to be synced
+        """
         i = 0
+        #this loops waits for a few bit to get the peer_list. Immportant for the first peer in net
         while (not all_peers_list and i<3):
+
             print("Waiting for peers to become available...")
             i+=1
             time.sleep(1)
-        # send the all peers to get the initial block
+    
         print("all peers are",all_peers_list)
-        # multiple client multiple sockets
+       
+        # connect to peers and get the chain
         lock.acquire()
-
+        
         for i in all_peers_list:
             get_init_blockchain(i,blockChain)
-           # self.lock.acquire()
+
         lock.release()
         print(blockChain.get_all_chain())
 
 def get_init_blockchain(i,blockChain):
+            """
+            this function will request to the connected peers 
+            to retrieve the blockchain from the peers
+            and then copare if the exsting chain is > recently retrieved list
+            if it is, then update the chain 
+
+            """
             buffer = 1024
             temp_client_sock = socket(AF_INET, SOCK_STREAM)
             print("my peer is",i)
             temp_client_sock.connect((i[0],i[1]))
-            #self.lock.release()
+
             temp_data = ""
             print("sending now")
             data = {
@@ -48,7 +62,7 @@ def get_init_blockchain(i,blockChain):
             temp_data+=data1
             temp_data+="done"
             temp_client_sock.send(temp_data.encode())
-            print("connecting to the  peer")
+
             temp_data = ""
             while True:
                 data = temp_client_sock.recv(buffer).decode()
@@ -57,19 +71,25 @@ def get_init_blockchain(i,blockChain):
                 if "done" in temp_data:
                   temp_data = temp_data.replace("done", "")
                   break
-            #print(temp_data)
+
             
             temp = json.loads(temp_data)
+            #update the chain ased on the length
             res  = blockChain.get_the_longest_chain(temp["len"],temp["chain"])
             print("longest_chain is",res)
             temp_client_sock.close()
 
-    
 
 def get_chain_and_send(clientsoc,blockChain):
+    """
+    this function is for the peers who get the request from the other peer
+    to get the blockchain for that.
+    the blockchainsa are semd as __dict__ over the network
+    """
     chains = []
     for block in blockChain.chain:
         chains.append(block.__dict__)
+
     data = {
         "len":len(chains),
         "chain":chains
@@ -82,7 +102,16 @@ def get_chain_and_send(clientsoc,blockChain):
     clientsoc.sendall(data_temp.encode())
 
 class Peers:
+    """
+    this class is core to establish p2p arch.
+
+    p2p works both as a server and the client
+    it deals with the tracker to retrieve the peer_list in every 10
+    then accpet connection from clients and the other peers
+
+    """
     def __init__(self,port,blockchain):
+
         self.myPeers=set()
         self.peerSock=socket(AF_INET, SOCK_STREAM)
         self.peerSockserver =  socket(AF_INET,SOCK_STREAM)
@@ -96,8 +125,13 @@ class Peers:
     def mine_unverified_transaction(self, clientsoc):
         """
         this function will mine the unverified transaction
+        and add to the blockchain by calling blockchain function
+        broadcast the block to the peer so that they are in sync
+        if valid block, send client 200 status
+
         """
         global all_peers_list
+        #mine the unverified transaction and add to block
         result = self.blockChain.mining()
         response = {
             "status":200
@@ -108,12 +142,15 @@ class Peers:
             }
 
         else:
+            #after adding the block print the blockchain
             print("my chain is", self.blockChain.get_all_chain())
             lock.acquire()
 
             succ_count = 0
             fail_count = 0
-            print("my peers are", all_peers_list)
+
+           # print("my peers are", all_peers_list)
+            """get alll peers and connect to the peeer to brpadcast to the added block to them"""
             for peers in all_peers_list:
                 print("sending the data to",peers)
                 temp_client_sock = socket(AF_INET, SOCK_STREAM)
@@ -139,6 +176,7 @@ class Peers:
                     print("received status is",data)
                     try:
                         data = json.loads(data)
+                    
                     except json.JSONDecodeError as e:
                         print(f"Error decoding JSON: {e}")
 
@@ -150,7 +188,7 @@ class Peers:
                     break
                 temp_client_sock.close()
             lock.release()
-
+        #send the response to the client if the transaction is valid
         response1= json.dumps(response)
         clientsoc.sendall(response1.encode())
 
@@ -161,14 +199,16 @@ class Peers:
         "registering with the tracker
         unregistering with the tracker
         periodically communicate with the tracker to get the updates of 
-        the alive tracker
+        the alive peers
         """
         addr = {
             "action":"register",
             "ip":self.ip,
             "port":self.port
         }
+
         addr_str = json.dumps(addr)
+
         self.peerSock.connect((trackerIp,trackerPort))
         addr1 = {
             "ip":self.ip,
@@ -179,6 +219,7 @@ class Peers:
         
         buffer = 1024
         while True:
+            #periodically send the request to the tracker to get the update
             self.peerSock.settimeout(10)
             try:
                 data = self.peerSock.recv(buffer)
@@ -204,6 +245,10 @@ class Peers:
     def p2p_server(self):
         """
         will act as a server and listen for the incoming connection from the other peers
+        and the client
+        will differentaite betweeen the request_type by indentifying ["msg_type"]
+
+
         """
 
         self.peerSockserver.bind(('',self.port))
@@ -279,8 +324,11 @@ class Peers:
                         
                     
             else:
-                   
-                    print(data)
+                    """
+                    this part deals with the client request
+                    newly traansaction will be added to the unverified_transaaction array
+                    then miner will pick that data from the array
+                    """
                     self.blockChain.add_new_transaction(temp_data2)
                     self.mine_unverified_transaction(clientsoc)
          
@@ -324,25 +372,7 @@ class Peers:
 
         print(f"Sending vote results to client: {data_json}")
         clientsoc.sendall(data_json.encode())
-    '''
-    
-    def check_chain_validity_for_tampering(self):
-        """
-        this function will check if block has been tempered. if so will go for the longest 
-        chain
-        """
-        
-        interval = 60
 
-        time.sleep(interval)
-
-        while len(self.blockChain.chain>1):
-             res = self.blockChain.validate_chain()
-             if res == False:
-                  p2pclient()
-             time.sleep(interval)
-             
-    '''
     
 
 
@@ -359,7 +389,7 @@ if __name__=='__main__':
     peerPort = args.peerPort
     trackerIp = args.trackerAddr
     trackerPort= args.trackerPort
-
+    #intitiats the blockchain class and create the genesis block and add to the chain
     blockChain = BlockChain()
     blockChain.create_genesis_block()
   
@@ -379,10 +409,3 @@ if __name__=='__main__':
     t2.start()
     all_threads.append(t2)
     
-    '''
-    
-    t2 = threading.Thread(target=peer.check_chain_validity_for_tampering, args=())
-    t2.start()
-    all_threads.append(t2)
-
-    '''

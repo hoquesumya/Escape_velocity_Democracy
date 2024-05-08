@@ -28,6 +28,12 @@ python3 peer.py 50000 127.0.0.1 60000
 ```
 
 3. Run the client:
+create a virtual env and activate the venv
+```bash
+python -m venv myenv
+source myenv/bin/activate
+pip3 install -r requirements.txt
+```
 ```bash
 python3 app.py
 ```
