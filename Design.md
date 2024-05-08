@@ -1,9 +1,5 @@
 ## What if we lived in a world without a centralized government? And all decisions were voted on by the population. The results of these votes would be extremely sensitive, so we can’t trust any individual to store it in its entirety. We have realized a protocol to support a Blockchain Voting Ledger for Direct Democracy
 
-### Dataflow: 
-![diagram](static/img/diagram.png)
-
-
 Our client application (used Flask) deals with retrieving the client's voting infomation. The voting information is sent to a available peer on the network where the peer will attempt to create a block and validate the block's itegrity and client's sent data. Based on the validity of the block, the block will be added to the blockchain and broadcast to the other peers that are connected to the network. The available peer information is collected from a tracker which keeps track of the alive peers in the network. a peer communicates with a tracker in every 10s. 
 
 ### Components:
@@ -54,7 +50,5 @@ The client application has three main functions:
 ## Future Work
 - Implement Forking support
 - Blastoff! (Deploy the project on cubesats in space)
-
-
 
             
