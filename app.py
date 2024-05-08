@@ -80,6 +80,7 @@ def show_results():
     return render_template('results.html', results=results)
 
 def send_data_to_peer(data, ip, port):
+    """this function will redirect client data to the peer"""
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     
@@ -98,4 +99,3 @@ def send_data_to_peer(data, ip, port):
 
 if __name__ == '__main__':
    app.run(debug=True)
-   #app.run(host='0.0.0.0', port=6000)
