@@ -51,6 +51,7 @@ Components:
 
     - **handleTracker()**:
         - This thread maintains connections with the tracker to receive updates about the alive trackers every 10 seconds.
+3. **App Design**
 
 
             
