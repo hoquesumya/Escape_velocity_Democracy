@@ -21,6 +21,9 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    '''
+    This function renders the index.html page and handles the form data. 
+    '''
     with open('static/candidates.txt') as f:
         random.seed(100) # control reproducibility in testing
         candidates = random.sample(f.readlines(), 10, )
