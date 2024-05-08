@@ -7,3 +7,4 @@ __pycache__/
 Escape Velocity for Democracy.pdf
 *.DS_Store
 __pycache__/app.cpython-311.pyc
+myenv/
