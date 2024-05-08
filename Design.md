@@ -4,11 +4,13 @@
 
 <b>Note: We have not implemented Forking support in our project</b>
 ## Architecture Design:
+
 Dataflow: 
-                        client<=> peer <=>peer (Consesus mechanism ; POW)
-                                     /\
-                                    |--> blockchain (call the blockchain function)
-                                    |<=> Tracker (peer as a client to tracker)
+          client <=> peer <=> peer (Consensus mechanism: Proof of Work)
+                       |       |       
+                       |       |       
+                Blockchain    Tracker
+
 
 Our client application (used Flask) deals with retrieving the client's voting infomation. The voting information is sent to a available peer on the network where the peer will attempt to create a block and validate the block's itegrity and client's sent data. Based on the validity of the block, the block will be added to the blockchain and broadcast to the other peers that are connected to the network. The available peer information is collected from a tracker which keeps track of the alive peers in the network. a peer communicates with a tracker in every 10s. 
 
