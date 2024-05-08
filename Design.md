@@ -2,7 +2,16 @@
 
 - What if we lived in a world without a centralized government? And all decisions were voted on by the population. The results of these votes would be extremely sensitive, so we can’t trust any individual to store it in its entirety. We propose a protocol to support Blockchain Voting Ledger for Direct Democracy
 
+
+
 <b>Note: We have not implemented Forking support in our project</b>
+
+ **File Structure**:
+ app.py
+ blockchain.py
+ peer.py
+ tracker.py
+
 ## Architecture Design:
 
 Dataflow: 
