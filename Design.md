@@ -61,6 +61,7 @@ Components:
     - **handleTracker()**:
         - This thread maintains connections with the tracker to receive updates about the alive trackers every 10 seconds.
 3. **App Design**
+ - we have designed app using flask and html. we have set up the interface such that the user can cast a vote and send the vote info to the peer (randomly choosen by reading localhost.txt file). app.py communicates with a peer using socket. The client can also send a request to the peer to get the result of the vote
 
 
             
